@@ -46,3 +46,8 @@ Archivo `.csv` con una sola fila, con las siguientes columnas:
 - Price_Product_B
 
 Todos los valores del archivo deben ser numéricos positivos y no nulos.
+
+## Otros inputs
+
+También existen 2 parámetros opcionales, correspondientes a un máximo de capacidad a producir de cada tipo de unidad.
+Este valor debe ser numérico no negativo en caso de existir.
