@@ -12,10 +12,12 @@ REQUIRED_COLUMNS = [
 ]
 
 class OptimizationModel:
-    def __init__(self, df):
+    def __init__(self, df, max_prod_a, max_prod_b):
         self.df = df
         self.products = ["A", "B"]
         self.machines = ["1", "2"]
+        self.max_prod_a = max_prod_a
+        self.max_prod_b = max_prod_b
         
     def solve(self):
         prob = pulp.LpProblem("Maximize Revenue", pulp.LpMaximize)
@@ -33,6 +35,13 @@ class OptimizationModel:
 
         for m in self.machines:
             prob += pulp.lpSum( x[f"Product_{var}"] * self.df[f"Product_{var}_Production_Time_Machine_{m}"].iloc[0] for var in self.products)  <= self.df[f"Machine_{m}_Available_Hours"].iloc[0]
+        
+        # Restricciones de capacidad
+        if self.max_prod_a is not None and self.max_prod_a >= 0 :
+            prob += x[f"Product_A"] <= self.max_prod_a
+            
+        if self.max_prod_b is not None and self.max_prod_b >= 0 :
+            prob += x[f"Product_B"] <= self.max_prod_b
         
         prob.solve()
         

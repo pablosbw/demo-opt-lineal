@@ -15,8 +15,16 @@ def results(request):
         form = UploadForm(request.POST, request.FILES)
         if form.is_valid():
             try:
-                data = DataLoader(request.FILES['file'])
-                model = OptimizationModel(data.df)
+                max_prod_a = form.cleaned_data['max_prod_a']
+                max_prod_b = form.cleaned_data['max_prod_b']
+                file = request.FILES['file']
+
+                data = DataLoader(
+                    file = file, 
+                    max_prod_a=max_prod_a, 
+                    max_prod_b=max_prod_b
+                )
+                model = OptimizationModel(data.df, max_prod_a=data.max_prod_a, max_prod_b=data.max_prod_b)
                 result, total = model.solve()
                 context.update({"result": result, "total": total})
                 return render(request, "optimizador/results.html", context)

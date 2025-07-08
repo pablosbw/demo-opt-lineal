@@ -14,11 +14,14 @@ REQUIRED_COLUMNS = [
 ]
 
 class DataLoader:
-    def __init__(self, file):
+    def __init__(self, file, max_prod_a, max_prod_b):
         self.df = pd.read_csv(file)
+        self.max_prod_a = max_prod_a
+        self.max_prod_b = max_prod_b
         self.validate()
 
     def validate(self):
+        # Validación df
         missing = [col for col in REQUIRED_COLUMNS if col not in self.df.columns]
         
         # Chequeos básicos
@@ -27,7 +30,6 @@ class DataLoader:
         
         if self.df.isnull().any().any():
             raise ValueError("Datos faltantes en el archivo.")
-        
         
         # Tipo esperado int/float
         non_numeric_cols = []
@@ -44,5 +46,13 @@ class DataLoader:
                 negative_columns.append(col)       
         if negative_columns:
             raise ValueError(f"La(s) columna(s) '{', '.join(negative_columns)}' contiene datos negativos.")
-
+        
+        # Validación máximos de producción (en caso de existir)
+        if self.max_prod_a is not None:
+            assert isinstance(self.max_prod_a, int), "La capacidad máxima de producción de B debe un número entero (no negativo)"
+            assert self.max_prod_a >= 0, "La capacidad máxima de producción de A debe ser no negativo"
             
+        if self.max_prod_b is not None:    
+            assert isinstance(self.max_prod_b, int), "La capacidad máxima de producción de B debe un número entero (no negativo)"
+            assert self.max_prod_b >= 0, "La capacidad máxima de producción de B debe ser no negativo"
+
